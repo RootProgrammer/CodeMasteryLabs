@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 class Solution:
@@ -30,11 +31,26 @@ class Solution:
         return triplets
     
 # For testing
-if __name__ == "__main__":
-    solution = Solution()
-    with open('input.txt', 'r') as file:
-        for line in file:
-            nums = list(map(int, line.strip().split(',')))  # Convert the line into a list of integers
-            triplets = solution.threeSum(nums)  # Find the triplets for the current list of numbers
-            print(f"Input: {nums}\nTriplets: {triplets}\n")  # Print the input and the found triplets
+class Test:
+    def compare_output(self, actual, expected):
+        actual_list = json.loads(actual.replace('\'', '"'))
+        expected_list = json.loads(expected)
+        return actual_list == expected_list
 
+    def test(self):
+        solution = Solution()
+        with open('input.txt', 'r') as input_file, open('output.txt', 'r') as output_file:
+            for input_line, expected_output_line in zip(input_file, output_file):
+                nums = list(map(int, input_line.strip().split(',')))
+                actual_output = solution.threeSum(nums)
+                actual_output_str = json.dumps(sorted(actual_output))  # Sorting to ensure consistent order
+                expected_output_str = expected_output_line.strip()
+                if self.compare_output(actual_output_str, expected_output_str):
+                    print("Passed")
+                else:
+                    print("Failed")
+                    print(f"Input: {nums}\nExpected: {expected_output_str}\nActual: {actual_output_str}\n")
+
+if __name__ == "__main__":
+    test_code = Test()
+    test_code.test()
